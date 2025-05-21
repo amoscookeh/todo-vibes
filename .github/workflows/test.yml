@@ -10,6 +10,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    environment: live
     
     steps:
     - name: Checkout code
@@ -29,7 +30,27 @@ jobs:
         go-version: '1.21'
         
     - name: Run tests
+      id: run_tests
       run: |
         cd todo-vibe
         go mod tidy
-        go test -v ./... 
+        # Run tests and capture output
+        go test -v ./... > test_output.txt 2>&1 || true
+        # Display output
+        cat test_output.txt
+        # Check for failures and exit appropriately
+        if grep -q "FAIL" test_output.txt; then
+          exit 1
+        fi
+
+    - name: Get Gemini suggestions for failing tests
+      if: failure()
+      env:
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      run: |
+        cd todo-vibe
+        cat test_output.txt | grep -A 10 "FAIL" > test_failures.txt
+        
+        # Run the script to get and log suggestions
+        go run scripts/gemini_test_analyzer.go
+        echo "🔍 See Gemini analysis in the job logs" 
