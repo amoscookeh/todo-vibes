@@ -10,6 +10,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
+    environment: live
     
     steps:
     - name: Checkout code
@@ -37,7 +38,6 @@ jobs:
 
     - name: Get Gemini suggestions for failing tests
       if: env.TESTS_FAILED == 'true'
-      environment: live
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: |
