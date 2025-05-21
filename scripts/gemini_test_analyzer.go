@@ -72,8 +72,8 @@ func main() {
 	}
 	fmt.Println("::endgroup::")
 
-	// Create request payload for Gemini API
-	prompt := fmt.Sprintf(`I have the following Go test failures. Please analyze and suggest fixes:
+	// Create request payload for Gemini API with improved prompt
+	prompt := fmt.Sprintf(`You are an expert Go developer tasked with analyzing and fixing test failures. Focus exclusively on identifying the root cause and providing actionable fixes.
 
 FAILING TEST OUTPUT:
 %s
@@ -84,7 +84,22 @@ TEST CODE:
 RELATED IMPLEMENTATION CODE:
 %s
 
-Based on these details, what's causing the test failure and how should it be fixed?`,
+Analyze this test failure following these steps:
+1. Identify the exact failing assertion or error in the test
+2. Determine why the test is failing (be specific about line numbers and conditions)
+3. Look for disconnects between what the test expects and what the implementation actually does
+4. Provide a concise fix recommendation with code snippets, clearly indicating:
+   - Which file needs to be modified
+   - Exactly what code should be changed
+   - The correct implementation (with complete code)
+
+Your response should be structured as:
+- Root Cause: [brief explanation of why the test is failing]
+- Affected Files: [list files that need modification]
+- Fix: [code snippets with clear before/after changes]
+- Explanation: [brief explanation of why the fix works]
+
+Focus only on the immediate test failure, not refactoring or improving the codebase beyond fixing the test.`,
 		contextData.failureOutput,
 		contextData.testCode,
 		contextData.implCode)
