@@ -41,13 +41,7 @@ func (s *TodoStore) Update(id string, todo *Todo) bool {
 	if _, ok := s.todos[id]; !ok {
 		return false
 	}
-<<<<<<< Updated upstream
 	s.todos[id] = todo
-=======
-
-	s.todos[id] = todo
-
->>>>>>> Stashed changes
 	return true
 }
 

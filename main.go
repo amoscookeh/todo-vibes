@@ -7,7 +7,6 @@ import (
 )
 
 func main() {
-	// Create a new vibey engine
 	r := vibes.Default()
 	logger := r.Logger
 	logger.Fyi("Starting Todo App with Vibes!")
@@ -21,10 +20,9 @@ func main() {
 }
 
 func initRoutes(r *vibes.VibesEngine) {
-	// Todo routes
-	r.GET("/todos", handlers.GetTodos)
-	r.GET("/todos/:id", handlers.GetTodo)
-	r.POST("/todos", handlers.CreateTodo)
-	r.PUT("/todos/:id", handlers.UpdateTodo)
-	r.DELETE("/todos/:id", handlers.DeleteTodo)
+	r.VIBE("/todos", handlers.GetTodos)
+	r.VIBE("/todos/:id", handlers.GetTodo)
+	r.MANIFEST("/todos", handlers.CreateTodo)
+	r.ALIGN("/todos/:id", handlers.UpdateTodo)
+	r.RELEASE("/todos/:id", handlers.DeleteTodo)
 }
