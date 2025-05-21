@@ -1,0 +1,46 @@
+=== RUN   TestCreateTodo
+[15:48:34] [36mFYI 💁[0m: go-vibes engine started with extra vibes ✨
+[GIN] 2025/05/21 - 15:48:34 | 404 |         125ns |                 | POST     "/todos"
+[15:48:34] [33mUHOH 😬[0m: POST /todos [404] (24.459µs) 🕵️🔍❓
+    main_test.go:33: 
+        	Error Trace:	/Users/SP13305/Desktop/personal/weekly-sharing/todo-vibe/main_test.go:33
+        	Error:      	Not equal: 
+        	            	expected: 200
+        	            	actual  : 404
+        	Test:       	TestCreateTodo
+    main_test.go:37: 
+        	Error Trace:	/Users/SP13305/Desktop/personal/weekly-sharing/todo-vibe/main_test.go:37
+        	Error:      	Expected nil, but got: &json.SyntaxError{msg:"invalid character 'S' looking for beginning of value", Offset:1}
+        	Test:       	TestCreateTodo
+    main_test.go:39: 
+        	Error Trace:	/Users/SP13305/Desktop/personal/weekly-sharing/todo-vibe/main_test.go:39
+        	Error:      	map[string]interface {}(nil) does not contain "message"
+        	Test:       	TestCreateTodo
+    main_test.go:40: 
+        	Error Trace:	/Users/SP13305/Desktop/personal/weekly-sharing/todo-vibe/main_test.go:40
+        	Error:      	Not equal: 
+        	            	expected: string("Todo created")
+        	            	actual  : <nil>(<nil>)
+        	Test:       	TestCreateTodo
+--- FAIL: TestCreateTodo (0.00s)
+panic: interface conversion: interface {} is nil, not map[string]interface {} [recovered]
+	panic: interface conversion: interface {} is nil, not map[string]interface {}
+
+goroutine 35 [running]:
+testing.tRunner.func1.2({0x1027266c0, 0x1400046bb00})
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/testing/testing.go:1734 +0x1ac
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/testing/testing.go:1737 +0x334
+panic({0x1027266c0?, 0x1400046bb00?})
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/runtime/panic.go:792 +0x124
+github.com/amoscookeh/todo-vibe.TestCreateTodo(0x140001296c0)
+	/Users/SP13305/Desktop/personal/weekly-sharing/todo-vibe/main_test.go:42 +0x4c0
+testing.tRunner(0x140001296c0, 0x10278dd50)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/testing/testing.go:1792 +0xe4
+created by testing.(*T).Run in goroutine 1
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/testing/testing.go:1851 +0x374
+FAIL	github.com/amoscookeh/todo-vibe	0.379s
+?   	github.com/amoscookeh/todo-vibe/handlers	[no test files]
+?   	github.com/amoscookeh/todo-vibe/models	[no test files]
+?   	github.com/amoscookeh/todo-vibe/scripts	[no test files]
+FAIL

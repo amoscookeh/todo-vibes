@@ -1,0 +1,17 @@
+--- FAIL: TestCreateTodo (0.00s)
+panic: interface conversion: interface {} is nil, not map[string]interface {} [recovered]
+	panic: interface conversion: interface {} is nil, not map[string]interface {}
+
+goroutine 35 [running]:
+testing.tRunner.func1.2({0x1027266c0, 0x1400046bb00})
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/testing/testing.go:1734 +0x1ac
+testing.tRunner.func1()
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/testing/testing.go:1737 +0x334
+panic({0x1027266c0?, 0x1400046bb00?})
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/runtime/panic.go:792 +0x124
+--
+FAIL	github.com/amoscookeh/todo-vibe	0.379s
+?   	github.com/amoscookeh/todo-vibe/handlers	[no test files]
+?   	github.com/amoscookeh/todo-vibe/models	[no test files]
+?   	github.com/amoscookeh/todo-vibe/scripts	[no test files]
+FAIL
