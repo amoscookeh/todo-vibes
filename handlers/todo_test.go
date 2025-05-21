@@ -19,25 +19,20 @@ func setupTest() *vibes.VibesEngine {
 func TestGetTodos(t *testing.T) {
 	r := setupTest()
 
-	// Clear todoStore for this test
 	todoStore = models.NewTodoStore()
 
-	// Add a test todo
 	todo := &models.Todo{
 		ID:    "test-id",
 		Title: "Test Todo",
 	}
 	todoStore.Create(todo)
 
-	// Setup request
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/todos", nil)
 
-	// Serve the request
 	r.GET("/todos", GetTodos)
 	r.ServeHTTP(w, req)
 
-	// Assert response
 	if w.Code != http.StatusOK {
 		t.Fatalf("Expected status %d, got %d", http.StatusOK, w.Code)
 	}
@@ -55,10 +50,8 @@ func TestGetTodos(t *testing.T) {
 func TestCreateTodo(t *testing.T) {
 	r := setupTest()
 
-	// Clear todoStore for this test
 	todoStore = models.NewTodoStore()
 
-	// Setup request with JSON body
 	todoInput := map[string]string{
 		"title": "New Test Todo",
 	}
@@ -68,14 +61,19 @@ func TestCreateTodo(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/todos", bytes.NewBuffer(jsonBody))
 	req.Header.Set("Content-Type", "application/json")
 
-	// Serve the request
 	r.POST("/todos", CreateTodo)
 	r.ServeHTTP(w, req)
 
+<<<<<<< Updated upstream
 	// Assert response - don't check exact status code due to vibes framework handling
 	// Just check it's successful (200-299)
 	if w.Code < 200 || w.Code >= 300 {
 		t.Fatalf("Expected success status, got %d", w.Code)
+=======
+	responseStr := w.Body.String()
+	if !strings.Contains(responseStr, "emoji") && !strings.Contains(responseStr, "🆕") {
+		t.Fatal("Expected emoji status in response, not found")
+>>>>>>> Stashed changes
 	}
 
 	var response map[string]interface{}
@@ -87,7 +85,6 @@ func TestCreateTodo(t *testing.T) {
 		t.Fatal("Expected success message in response")
 	}
 
-	// Check if todo was actually stored
 	todos := todoStore.GetAll()
 	if len(todos) != 1 {
 		t.Fatalf("Expected 1 todo in store, got %d", len(todos))
@@ -96,3 +93,82 @@ func TestCreateTodo(t *testing.T) {
 		t.Fatalf("Expected title to be 'New Test Todo', got '%s'", todos[0].Title)
 	}
 }
+<<<<<<< Updated upstream
+=======
+
+func TestDeleteTodo(t *testing.T) {
+	r := setupTest()
+
+	todoStore = models.NewTodoStore()
+
+	todo := &models.Todo{
+		ID:    "test-id",
+		Title: "Test Todo",
+	}
+	todoStore.Create(todo)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("DELETE", "/todos/test-id", nil)
+
+	r.DELETE("/todos/:id", DeleteTodo)
+	r.ServeHTTP(w, req)
+
+	var response map[string]interface{}
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		t.Fatal("Failed to unmarshal response", err)
+	}
+
+	_, hasEmojiField := response["status_emoji"]
+	if !hasEmojiField {
+		t.Fatal("Expected status_emoji field in response")
+	}
+
+	todos := todoStore.GetAll()
+	if len(todos) != 0 {
+		t.Fatalf("Expected 0 todos in store, got %d", len(todos))
+	}
+}
+
+func TestUpdateTodo(t *testing.T) {
+	r := setupTest()
+
+	todoStore = models.NewTodoStore()
+
+	originalTodo := &models.Todo{
+		ID:        "test-id",
+		Title:     "Original Title",
+		Completed: false,
+	}
+	todoStore.Create(originalTodo)
+
+	updateInput := map[string]interface{}{
+		"title":     "Updated Title",
+		"completed": true,
+	}
+	jsonBody, _ := json.Marshal(updateInput)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("PUT", "/todos/test-id", bytes.NewBuffer(jsonBody))
+	req.Header.Set("Content-Type", "application/json")
+
+	r.PUT("/todos/:id", UpdateTodo)
+	r.ServeHTTP(w, req)
+
+	if w.Code < 200 || w.Code >= 300 {
+		t.Fatalf("Expected success status, got %d", w.Code)
+	}
+
+	updatedTodo, exists := todoStore.Get("test-id")
+	if !exists {
+		t.Fatal("Expected todo to still exist")
+	}
+
+	if updatedTodo.Title != "Updated Title" {
+		t.Fatalf("Expected title to be updated to 'Updated Title', got '%s'", updatedTodo.Title)
+	}
+
+	if !updatedTodo.Completed {
+		t.Fatal("Expected completed to be updated to true")
+	}
+}
+>>>>>>> Stashed changes

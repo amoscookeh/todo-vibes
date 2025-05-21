@@ -10,10 +10,8 @@ import (
 	"github.com/amoscookeh/todo-vibe/models"
 )
 
-// Global store for todos
 var todoStore = models.NewTodoStore()
 
-// GetTodos returns all todos
 func GetTodos(c *vibes.Context) {
 	todos := todoStore.GetAll()
 	c.JSON(http.StatusOK, vibes.Map{
@@ -21,7 +19,6 @@ func GetTodos(c *vibes.Context) {
 	})
 }
 
-// GetTodo returns a specific todo by ID
 func GetTodo(c *vibes.Context) {
 	id := c.Param("id")
 	todo, exists := todoStore.Get(id)
@@ -38,7 +35,6 @@ func GetTodo(c *vibes.Context) {
 	})
 }
 
-// CreateTodo adds a new todo
 func CreateTodo(c *vibes.Context) {
 	var input struct {
 		Title string `json:"title"`
@@ -69,7 +65,6 @@ func CreateTodo(c *vibes.Context) {
 	})
 }
 
-// UpdateTodo modifies an existing todo
 func UpdateTodo(c *vibes.Context) {
 	id := c.Param("id")
 
@@ -116,7 +111,6 @@ func UpdateTodo(c *vibes.Context) {
 	}
 }
 
-// DeleteTodo removes a todo
 func DeleteTodo(c *vibes.Context) {
 	id := c.Param("id")
 
