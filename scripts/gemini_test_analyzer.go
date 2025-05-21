@@ -12,15 +12,23 @@ import (
 func main() {
 	apiKey := os.Getenv("GEMINI_API_KEY")
 	if apiKey == "" {
-		fmt.Println("Error: GEMINI_API_KEY environment variable is not set")
-		os.Exit(1)
+		fmt.Println("::warning::GEMINI_API_KEY environment variable is not set")
+		fmt.Println("Tests failed, but cannot provide AI suggestions without an API key.")
+		fmt.Println("Please set the GEMINI_API_KEY secret in your GitHub repository.")
+		os.Exit(0) // Exit gracefully to not fail the workflow
 	}
 
 	// Read test failures from file
 	failureData, err := ioutil.ReadFile("test_failures.txt")
 	if err != nil {
-		fmt.Printf("Error reading test failures: %v\n", err)
-		os.Exit(1)
+		fmt.Printf("::warning::Error reading test failures: %v\n", err)
+		fmt.Println("Could not read test failures file. Make sure there are failing tests.")
+		os.Exit(0) // Exit gracefully
+	}
+
+	if len(failureData) == 0 {
+		fmt.Println("::warning::No test failures detected in the output")
+		os.Exit(0)
 	}
 
 	// Create request payload for Gemini API
@@ -38,31 +46,31 @@ func main() {
 
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Error marshaling request: %v\n", err)
-		os.Exit(1)
+		fmt.Printf("::warning::Error marshaling request: %v\n", err)
+		os.Exit(0)
 	}
 
 	// Call Gemini API
-	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" + apiKey
+	url := "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(payloadBytes))
 	if err != nil {
-		fmt.Printf("Error calling Gemini API: %v\n", err)
-		os.Exit(1)
+		fmt.Printf("::warning::Error calling Gemini API: %v\n", err)
+		os.Exit(0)
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Printf("Error reading response: %v\n", err)
-		os.Exit(1)
+		fmt.Printf("::warning::Error reading response: %v\n", err)
+		os.Exit(0)
 	}
 
 	// Parse response
 	var result map[string]interface{}
 	err = json.Unmarshal(body, &result)
 	if err != nil {
-		fmt.Printf("Error parsing response: %v\n", err)
-		os.Exit(1)
+		fmt.Printf("::warning::Error parsing response: %v\n", err)
+		os.Exit(0)
 	}
 
 	// Extract and print suggestions
@@ -84,6 +92,9 @@ func main() {
 		}
 	} else {
 		fmt.Println("No suggestions received from Gemini API")
+		if result["error"] != nil {
+			fmt.Printf("API Error: %v\n", result["error"])
+		}
 	}
 
 	fmt.Println("-------------------------------------------")

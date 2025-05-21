@@ -37,14 +37,12 @@ jobs:
 
     - name: Get Gemini suggestions for failing tests
       if: env.TESTS_FAILED == 'true'
+      environment: live
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: |
         cd todo-vibe
         cat test_output.txt | grep -A 10 "FAIL" > test_failures.txt
-        
-        # Install required dependencies
-        go install github.com/google/go-github/v57@latest
         
         # Run the script to get and log suggestions
         go run scripts/gemini_test_analyzer.go
