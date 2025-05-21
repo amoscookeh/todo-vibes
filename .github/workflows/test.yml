@@ -34,16 +34,17 @@ jobs:
       run: |
         cd todo-vibe
         go mod tidy
-        go test -v ./... > test_output.txt 2>&1
-        TEST_EXIT_CODE=$?
-        if [ $TEST_EXIT_CODE -ne 0 ]; then
-          echo "TESTS_FAILED=true" >> $GITHUB_ENV
+        # Run tests and capture output
+        go test -v ./... > test_output.txt 2>&1 || true
+        # Display output
+        cat test_output.txt
+        # Check for failures and exit appropriately
+        if grep -q "FAIL" test_output.txt; then
+          exit 1
         fi
-        # Store exit code for later
-        echo "TEST_EXIT_CODE=$TEST_EXIT_CODE" >> $GITHUB_ENV
 
     - name: Get Gemini suggestions for failing tests
-      if: env.TESTS_FAILED == 'true'
+      if: failure()
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: |
@@ -52,12 +53,4 @@ jobs:
         
         # Run the script to get and log suggestions
         go run scripts/gemini_test_analyzer.go
-        echo "🔍 See Gemini analysis in the job logs"
-        
-    - name: Exit with original test status
-      if: always()
-      run: |
-        if [ "${{ env.TEST_EXIT_CODE }}" != "0" ]; then
-          echo "Tests failed with exit code ${{ env.TEST_EXIT_CODE }}"
-          exit 1
-        fi 
+        echo "🔍 See Gemini analysis in the job logs" 
