@@ -22,7 +22,7 @@ func main() {
 func initRoutes(r *vibes.VibesEngine) {
 	r.VIBE("/todos", handlers.GetTodos)
 	r.VIBE("/todos/:id", handlers.GetTodo)
-	r.MANIFEST("/todos", handlers.CreateTodo)
-	r.ALIGN("/todos/:id", handlers.UpdateTodo)
-	r.RELEASE("/todos/:id", handlers.DeleteTodo)
+	r.RELEASE("/todos", handlers.CreateTodo)
+	r.RELEASE("/todos/:id", handlers.UpdateTodo)
+	r.ALIGN("/todos/:id", handlers.DeleteTodo)
 }
