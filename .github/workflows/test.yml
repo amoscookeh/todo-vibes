@@ -50,10 +50,9 @@ jobs:
         PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
       run: |
         cd todo-vibe
-        cat test_output.txt | grep -A 10 "FAIL" > test_failures.txt
         
         # Move test failures to scripts directory
-        mv test_failures.txt scripts/
+        mv test_output.txt scripts/
         
         # Run the analyzer script - make sure it has correct dependencies and files
         cd scripts

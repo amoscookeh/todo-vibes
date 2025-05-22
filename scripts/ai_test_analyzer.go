@@ -33,7 +33,7 @@ func main() {
 	}
 
 	// Read test failures from file
-	failureData, err := ioutil.ReadFile("test_failures.txt")
+	failureData, err := ioutil.ReadFile("test_output.txt")
 	if err != nil {
 		fmt.Printf("Error reading test failures: %v\n", err)
 		os.Exit(1)
