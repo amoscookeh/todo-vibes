@@ -1,0 +1,45 @@
+---
+model: googleai/gemini-2.0-flash
+config:
+  temperature: 0.2
+input:
+  schema:
+    failures: string
+    file_contents: string
+    docs?: string
+---
+
+You are an expert Go developer tasked with analyzing test failures and providing concise, actionable solutions.
+Focus on specific code fixes rather than general advice. Keep explanations brief but clear.
+
+I have the following Go test failures:
+{{failures}}
+
+Here are the relevant files:
+{{file_contents}}
+
+{{#if docs}}
+For context, this server is built on the Go-Vibes Framework. These are the relevant documents related to this error:
+{{docs}}
+{{/if}}
+
+Analyze the error and suggest code changes:
+1. Identify the root cause of the failure
+2. Suggest specific code changes for fixing the issue
+
+Format your response with:
+
+Problem: [brief description of the issue]
+
+File: path/to/file.go
+Current code:
+```go
+// problematic code
+```
+
+Suggested fix:
+```go
+// fixed code
+```
+
+Explanation: [brief explanation of why this fix works] 
