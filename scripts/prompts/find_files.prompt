@@ -1,0 +1,25 @@
+---
+model: googleai/gemini-1.5-pro
+config:
+  temperature: 0.2
+input:
+  schema:
+    failures: string
+    repo_tree: string
+output:
+  schema:
+    file_paths(array): string
+---
+
+You are an expert Go developer tasked with analyzing test failures.
+Based on the error message, identify the most relevant files that need to be examined.
+Return ONLY an array of file paths that are likely related to the error.
+
+Test failure:
+{{failures}}
+
+Repository structure:
+{{repo_tree}}
+
+Return a focused list of Go source files that are most likely related to the test failures.
+Format your response as a JSON array of file paths relative to the repo root. 
