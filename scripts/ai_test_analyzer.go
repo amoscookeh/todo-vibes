@@ -11,6 +11,7 @@ import (
 	"github.com/firebase/genkit/go/ai"
 	"github.com/firebase/genkit/go/genkit"
 	"github.com/firebase/genkit/go/plugins/googlegenai"
+	"github.com/firebase/genkit/go/plugins/pinecone"
 )
 
 func main() {
@@ -40,7 +41,7 @@ func main() {
 
 	// Initialize Genkit with Google AI plugin and Dotprompt
 	g, err := genkit.Init(ctx,
-		genkit.WithPlugins(&googlegenai.GoogleAI{}),
+		genkit.WithPlugins(&googlegenai.GoogleAI{}, &pinecone.Pinecone{}),
 		genkit.WithDefaultModel("googleai/gemini-1.5-pro"),
 		genkit.WithPromptDir(promptDir),
 	)
@@ -48,17 +49,41 @@ func main() {
 		log.Fatalf("could not initialize Genkit: %v", err)
 	}
 
+	// Fetch relevant Go Vibes docs
+	goVibesDocs, err := retrieveGoVibes(g, string(failureData))
+	if err != nil {
+		fmt.Printf("Warning: could not retrieve Go Vibes docs: %v\n", err)
+		fmt.Println("Continuing without RAG context...")
+	}
+
+	docs := ""
+	if goVibesDocs != nil && len(goVibesDocs) > 0 {
+		for _, doc := range goVibesDocs {
+			if doc != nil && len(doc.Content) > 0 && doc.Content[0] != nil {
+				docs += doc.Content[0].Text + "\n"
+			}
+		}
+	}
+
+	log.Printf("Go Vibes docs: %v", docs)
+
 	// Look up the prompt from the Dotprompt file
 	testAnalyzerPrompt := genkit.LookupPrompt(g, "test_analyzer")
 	if testAnalyzerPrompt == nil {
 		log.Fatalf("could not find prompt 'test_analyzer'")
 	}
 
+	inputData := map[string]interface{}{
+		"failures": string(failureData),
+	}
+
+	if docs != "" {
+		inputData["docs"] = docs
+	}
+
 	// Execute the prompt with the test failure data
 	resp, err := testAnalyzerPrompt.Execute(ctx,
-		ai.WithInput(map[string]interface{}{
-			"failures": string(failureData),
-		}),
+		ai.WithInput(inputData),
 	)
 	if err != nil {
 		log.Fatalf("could not execute prompt: %v", err)
@@ -74,4 +99,29 @@ func main() {
 
 	fmt.Println("-------------------------------------------")
 	fmt.Println("::endgroup::")
+}
+
+func retrieveGoVibes(g *genkit.Genkit, query string) ([]*ai.Document, error) {
+	indexId := "go-vibes"
+	ctx := context.Background()
+
+	embedder := googlegenai.GoogleAIEmbedder(g, "text-embedding-004")
+	retriever, err := pinecone.DefineRetriever(ctx, g, pinecone.Config{
+		IndexID:  indexId,
+		Embedder: embedder,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(query)
+	resp, err := retriever.Retrieve(ctx, &ai.RetrieverRequest{
+		Query:   ai.DocumentFromText(query, nil),
+		Options: nil,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Documents, nil
 }

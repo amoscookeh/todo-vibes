@@ -4,6 +4,8 @@ go 1.24.2
 
 require github.com/firebase/genkit/go v0.5.4
 
+replace github.com/firebase/genkit/go => ./go
+
 require (
 	cloud.google.com/go v0.118.0 // indirect
 	cloud.google.com/go/auth v0.16.0 // indirect

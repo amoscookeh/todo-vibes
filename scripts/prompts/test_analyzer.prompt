@@ -5,6 +5,7 @@ config:
 input:
   schema:
     failures: string
+    docs?: string
 ---
 
 You are an expert Go developer tasked with analyzing test failures and providing concise, actionable solutions.
@@ -13,4 +14,12 @@ Keep explanations brief but clear.
 
 I have the following Go test failures. Please analyze and suggest fixes:
 
-{{failures}} 
+{{failures}}
+
+{{#if docs}}
+For context, this server is built on the Go-Vibes Framework. These are the relevant documents related to this error: 
+
+{{docs}}
+{{/if}}
+
+
