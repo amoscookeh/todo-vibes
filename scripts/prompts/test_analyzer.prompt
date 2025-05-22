@@ -5,6 +5,7 @@ config:
 input:
   schema:
     failures: string
+    test_code: string
     impl_code: string
     docs?: string
 ---
@@ -17,8 +18,10 @@ I have the following Go test failures. Please analyze and suggest fixes:
 
 {{failures}}
 
-RELATED IMPLEMENTATION CODE:
+TEST CODE:
+{{test_code}}
 
+RELATED IMPLEMENTATION CODE:
 {{impl_code}}
 
 {{#if docs}}
@@ -26,5 +29,3 @@ For context, this server is built on the Go-Vibes Framework. These are the relev
 
 {{docs}}
 {{/if}}
-
-
