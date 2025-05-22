@@ -5,6 +5,7 @@ config:
 input:
   schema:
     failures: string
+    impl_code: string
     docs?: string
 ---
 
@@ -15,6 +16,10 @@ Keep explanations brief but clear.
 I have the following Go test failures. Please analyze and suggest fixes:
 
 {{failures}}
+
+RELATED IMPLEMENTATION CODE:
+
+{{impl_code}}
 
 {{#if docs}}
 For context, this server is built on the Go-Vibes Framework. These are the relevant documents related to this error: 
