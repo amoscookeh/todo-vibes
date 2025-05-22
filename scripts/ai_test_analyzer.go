@@ -50,6 +50,7 @@ func main() {
 	}
 
 	// Fetch relevant Go Vibes docs
+	fmt.Println(string(failureData))
 	goVibesDocs, err := retrieveGoVibes(g, string(failureData))
 	if err != nil {
 		fmt.Printf("Warning: could not retrieve Go Vibes docs: %v\n", err)
@@ -57,15 +58,15 @@ func main() {
 	}
 
 	docs := ""
+	log.Printf("Go Vibes docs: %v", docs)
 	if goVibesDocs != nil && len(goVibesDocs) > 0 {
 		for _, doc := range goVibesDocs {
+			log.Printf("Appending Go Vibes doc: %v", doc.Metadata["fileName"])
 			if doc != nil && len(doc.Content) > 0 && doc.Content[0] != nil {
 				docs += doc.Content[0].Text + "\n"
 			}
 		}
 	}
-
-	log.Printf("Go Vibes docs: %v", docs)
 
 	// Look up the prompt from the Dotprompt file
 	testAnalyzerPrompt := genkit.LookupPrompt(g, "test_analyzer")
@@ -102,7 +103,7 @@ func main() {
 }
 
 func retrieveGoVibes(g *genkit.Genkit, query string) ([]*ai.Document, error) {
-	indexId := "go-vibes"
+	indexId := "go-vibes-docs"
 	ctx := context.Background()
 
 	embedder := googlegenai.GoogleAIEmbedder(g, "text-embedding-004")
@@ -114,10 +115,12 @@ func retrieveGoVibes(g *genkit.Genkit, query string) ([]*ai.Document, error) {
 		return nil, err
 	}
 
-	fmt.Println(query)
 	resp, err := retriever.Retrieve(ctx, &ai.RetrieverRequest{
-		Query:   ai.DocumentFromText(query, nil),
-		Options: nil,
+		Query: ai.DocumentFromText(query, nil),
+		Options: &pinecone.RetrieverOptions{
+			Namespace: "go-vibes-docs",
+			Count:     10,
+		},
 	})
 	if err != nil {
 		return nil, err
